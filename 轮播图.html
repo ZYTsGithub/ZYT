@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+        html,body{
+            width: 100%;
+            height: 100%;
+        }
+
+        .item-list {
+            list-style: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .item {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            color: white;
+            font-size: 300px;
+            transition: all .5s;
+            opacity: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            background-color: black;
+        }
+        .item img{
+            width: 100%;
+        }
+        .item.active {
+            opacity: 1;
+            z-index: 100;
+        }
+        .wrap{
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin: 0px auto;
+        }
+        .btn{
+            outline: none;
+            position: absolute;
+            z-index: 1000000000;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 120px;
+            height: 120px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 1000px;  
+            font-size: 50px;
+        }
+        .btn.active{
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        #goPrev{
+            left: 0px;
+        }
+        #goNext{
+            right: 0px;
+        }
+
+        .point-list{
+            position: absolute;
+            z-index: 10000000;
+            list-style: none;
+            right: 50%;
+            transform: translateX(50%);
+            bottom: 20px;
+        }
+        .point-list::after{
+            content: "";
+            clear: both;
+            display: block;
+        }
+        .point{
+            width: 10px;
+            height: 10px;
+            background-color: gainsboro;
+            opacity: 0.8;
+            border-radius: 100px;
+            float: left;
+            margin-left: 20px;
+        }
+        .point.active{
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <ul class="item-list">
+            <li class="item active">
+                <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1541939908&di=11d4f175b11066bac11a1efc44155855&imgtype=jpg&er=1&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2F2017-11-28%2F5a1d10000fc8c.jpg" alt="">
+            </li>
+            <li class="item">
+                <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1541345135827&di=cf9fb8312de6e7af9bd5426ed5d46acf&imgtype=0&src=http%3A%2F%2Fs02.ourgame.com.cn%2Fg1%2FM00%2F49%2F81%2FwKgCyVkmG0_9cVXGAAULUChZEIw801.jpg" alt="">
+            </li>
+            <li class="item">
+                <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1541939872&di=f1f41a6a3483d62385868a288b072634&imgtype=jpg&er=1&src=http%3A%2F%2Fs9.knowsky.com%2Fbizhi%2Fl%2F1-5000%2F2009528152352310525476.jpg" alt="">
+            </li>
+            <li class="item">
+                <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1541345152527&di=22452cff59f6f76e66bb811d3665e03d&imgtype=0&src=http%3A%2F%2Fattach.bbs.miui.com%2Fforum%2F201310%2F14%2F171458zen6b54u12lkbg4t.jpeg" alt="">
+            </li>
+        </ul>
+        <button id="goNext" class="btn"> &gt; </button>
+        <button id="goPrev" class="btn"> &lt; </button> 
+        <ul class="point-list">
+            <li class="point active" data-index="0"></li>
+            <li class="point" data-index="1"></li>
+            <li class="point" data-index="2"></li>
+            <li class="point" data-index="3"></li>
+        </ul>
+    </div>
+
+    <script>
+        // getRandomRGBA => 'rgba(255,255,255,0.6)'
+        // fn('rgb(255,255,255)') => '#ffffff'
+
+        // 生成随机的颜色函数 ， 返回字符串16进制颜色值 ， 例如：'#ff6700'
+        var getRandomColor = function () {
+            var color = '#'
+            var str = '1234567890abcdef' // 0 - 15 Math.random() => [0 , 1)
+            for (var i = 0; i < 6; i++) {
+                var randomIndex = parseInt(Math.random() * str.length)
+                color += str[randomIndex]
+            }
+            return color
+        }
+
+        var points = document.getElementsByClassName('point')
+        var items = document.getElementsByClassName('item')
+        for (var index = 0; index < items.length; index++) {
+            points[index]["style"]["background-color"] = getRandomColor()
+        }
+
+        // goPrev
+
+        var getActiveIndex = function () {
+            var activeIndex = 0
+            for (var j = 0; j < items.length; j++) {
+                if (items[j].className.indexOf('active') > -1) {
+                    // 存在
+                    activeIndex = j
+                }
+            }
+            return activeIndex
+        }
+
+        var goNext = function () {
+            // 寻找谁有active
+            var activeIndex = getActiveIndex()
+            items[activeIndex].className = 'item'
+            points[activeIndex].className = 'point'
+            if (activeIndex + 1 === items.length) {
+                items[0].className = 'item active'
+                points[0].className = 'point active'
+            } else {
+                items[activeIndex + 1].className = 'item active'
+                points[activeIndex + 1].className = 'point active'
+            }
+        }
+
+        var goPrev = function () {
+            var activeIndex = getActiveIndex()
+            items[activeIndex].className = 'item'
+            points[activeIndex].className = 'point'
+            if (activeIndex === 0) {
+                items[items.length - 1].className = 'item active'
+                points[items.length - 1].className = 'point active'
+            } else {
+                items[activeIndex - 1].className = 'item active'
+                points[activeIndex - 1].className = 'point active'
+            }
+        }
+
+        var goIndex = function (index) {
+            // index = '10'
+            if (!(index >= 0 && index <= items.length - 1)) return
+
+            var activeIndex = getActiveIndex()
+            items[activeIndex].className = 'item'
+            points[activeIndex].className = 'point'
+
+            items[index].className = 'item active'
+            points[index].className = 'point active'
+
+        }
+
+        var goNextBtn = document.getElementById('goNext')
+        // goNextBtn.onclick = goNext
+        goNextBtn.addEventListener('click', function () {
+            goNext()
+        })
+        var goPrevBtn = document.getElementById('goPrev')
+        // goPrevBtn.onclick = goPrev
+        goPrevBtn.addEventListener('click', function () {
+            goPrev()
+        })
+
+
+        // 小圆点监听器
+        for(var i = 0 ; i < points.length ; i++){
+            points[i].addEventListener('click',function(e){
+                var index = e.target.getAttribute('data-index')
+                goIndex( parseInt(index) )
+            })
+        }
+
+        // 按钮的hover效果
+        var btns = document.getElementsByClassName('btn')
+        for(var i = 0 ; i < btns.length ; i++){
+            btns[i].addEventListener('mouseenter',function(e){
+                e.target.className = 'btn active'
+            })
+            btns[i].addEventListener('mouseleave',function(e){
+                e.target.className = 'btn'
+            })
+        }
+
+        setInterval(goNext,3000)
+    </script>
+</body>
+
+</html>
